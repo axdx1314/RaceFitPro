@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <!--icon="@mipmap/jilu_icon_sel"-->
+    <tab
+        icon="@drawable/draw_jilu_item"
+        id="@+id/tab_home"
+        title="@string/recording" />
+    <!--icon="@mipmap/shuju_icon_sel"-->
+    <tab
+        icon="@drawable/draw_data_item"
+        id="@+id/tab_data"
+        title="@string/data" />
+    <!--icon="@mipmap/paobu_icon_sel"-->
+    <tab
+        icon="@drawable/draw_run_item"
+        id="@+id/tab_set"
+        title="@string/move_ment" />
+
+    <!--<tab-->
+        <!--icon="@mipmap/image_add_friends"-->
+        <!--id="@+id/tab_frend"-->
+        <!--title="@string/string_friends" />-->
+    <!--icon="@mipmap/wode_icon_sel"-->
+    <tab
+        icon="@drawable/draw_wode_item"
+        id="@+id/tab_my"
+        title="@string/mine" />
+</tabs>
