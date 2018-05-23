@@ -195,16 +195,14 @@
 
             </RelativeLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/linear_border" />
+
 
 
             <RelativeLayout
                 android:id="@+id/watch_takePhotoRel"
                 android:layout_width="match_parent"
                 android:layout_height="45dp"
+                android:visibility="gone"
                 android:background="@drawable/square_white_btn_change">
 
                 <ImageView

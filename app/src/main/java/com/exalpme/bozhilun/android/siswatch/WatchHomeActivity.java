@@ -168,7 +168,8 @@ public class WatchHomeActivity extends WatchBaseActivity implements PhoneStateLi
                     break;
                 case 555:
                     Log.e(TAG,"------来电222----");
-
+                    characteristic.setValue(WatchConstants.phoneAlert(0));
+                    mBluetoothService.writeCharacteristic(characteristic);
                     break;
             }
         }
@@ -320,7 +321,8 @@ public class WatchHomeActivity extends WatchBaseActivity implements PhoneStateLi
                     }
                     //读写数据characteristic
                     readMnotyGattService = mBluetoothService.getSupportedGattServices(UUID.fromString(SampleGattAttributes.BZLUN_IKP_SERVER_UUID));
-                    readCharacteristic = readMnotyGattService.getCharacteristic(UUID.fromString(SampleGattAttributes.BZLUN_IKP_READ_UUID));
+                    if(readMnotyGattService != null)
+                        readCharacteristic = readMnotyGattService.getCharacteristic(UUID.fromString(SampleGattAttributes.BZLUN_IKP_READ_UUID));
                     Log.e(TAG,"----mnotyGattService------"+mnotyGattService+"-characteristic-"+characteristic.toString()+"-readMnotyGattService-"+readMnotyGattService.toString()+"--readCharacteristic-"+readCharacteristic.toString());
                     Message msg = new Message();
                     msg.what = 1;
@@ -711,7 +713,9 @@ public class WatchHomeActivity extends WatchBaseActivity implements PhoneStateLi
         super.onDestroy();
         EventBus.getDefault().unregister(this);
         unregisterReceiver(mGattUpdateReceiver);
-        MyApp.getWatchBluetoothService().disconnect();
+        if( MyApp.getWatchBluetoothService()!=null){
+            MyApp.getWatchBluetoothService().disconnect();
+        }
         unregisterReceiver(broadcastReceiver);
         uploadStepsPressent.detach();
     }
@@ -795,8 +799,8 @@ public class WatchHomeActivity extends WatchBaseActivity implements PhoneStateLi
     @Override
     public void callPhoneData(int flag,String phoneNumber) {
         Log.e(TAG,"-----电话状态变化==="+flag);
-        String bleName = ""+(String) SharedPreferencesUtils.readObject(MyApp.getContext(), "mylanya")+"";
-        if (bleName == null || TextUtils.isEmpty(bleName)) return;
+//        String bleName = ""+(String) SharedPreferencesUtils.readObject(MyApp.getContext(), "mylanya")+"";
+//        if (bleName == null || TextUtils.isEmpty(bleName)) return;
         if(!WatchHomeActivity.this.isFinishing() && mBluetoothService != null && characteristic != null){
             switch (flag){
                 case 0: //挂断

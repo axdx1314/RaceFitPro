@@ -10,6 +10,7 @@ import static com.yalantis.ucrop.UCrop.REQUEST_CROP;
 public class TempActivity extends AppCompatActivity {
 
     PickerManager pickerManager;
+    private static Uri uri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,20 +31,30 @@ public class TempActivity extends AppCompatActivity {
         }
         switch (requestCode) {
             case PickerManager.REQUEST_CODE_SELECT_IMAGE:
-                Uri uri;
-                if (data != null)
-                    uri = data.getData();
-                else
-                    uri = pickerManager.getImageFile();
+                try {
 
-                pickerManager.setUri(uri);
-                pickerManager.startCropActivity();
+                    if (data != null)
+                        uri = data.getData();
+                    else
+                        uri = pickerManager.getImageFile();
+
+                    pickerManager.setUri(uri);
+                    pickerManager.startCropActivity();
+                }catch (Exception e){
+                    e.getMessage();
+                }
+
                 break;
             case REQUEST_CROP:
-                if (data != null) {
-                    pickerManager.handleCropResult(data);
-                } else
-                    finish();
+                try {
+                    if (data != null) {
+                        pickerManager.handleCropResult(data);
+                    } else
+                        finish();
+                }catch (Exception e){
+                    e.getMessage();
+                }
+
                 break;
         }
     }

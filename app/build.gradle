@@ -31,9 +31,9 @@ android {
         multiDexEnabled true
         applicationId "com.example.bozhilun.android"
         minSdkVersion 18
-        targetSdkVersion 23
-        versionCode 43
-        versionName "3.6.0.5"
+        targetSdkVersion 25
+        versionCode 44
+        versionName "3.6.0.6"
         manifestPlaceholders = [
                 qq_id: "101357650"
         ]
@@ -75,16 +75,16 @@ android {
             buildConfigField "int", "ENV_TYPE", "1"
             applicationId "com.example.bozhilun.android"
             manifestPlaceholders = [app_name: "RaceFitPro", app_icon: "@mipmap/beraceiocn"]
-            versionCode 43
-            versionName "3.6.0.5"
+            versionCode 45
+            versionName "3.6.0.7"
         }
 
         racefitproen {
             buildConfigField "int", "ENV_TYPE", "2"
             applicationId "com.bozlun.bozhilun.android"
             manifestPlaceholders = [app_name: "RaceFitPro", app_icon: "@mipmap/beraceiocn"]
-            versionCode 43
-            versionName "3.6.0.5"
+            versionCode 45
+            versionName "3.6.0.7"
         }
     }
 
@@ -127,16 +127,6 @@ dependencies {
     compile files('libs/libammsdk.jar')
     compile files('libs/android-times-square-1.0.3-sources.jar')
     compile files('libs/date4j.jar')
-    //闹钟需要
-
-    //闹钟需要
-
-    //闹钟需要
-
-    //闹钟需要
-
-    //闹钟需要
-
     //不显示试图
     compile files('libs/hellocharts-library-1.5.8.jar')
     compile files('libs/commons-lang-2.5.jar')
@@ -171,6 +161,7 @@ dependencies {
     compile(name: 'W30SBLE', ext: 'aar')
     compile project(':dfu')
     compile files('libs/xcl-charts.jar')
+    //noinspection GradleCompatible
     compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.android.support:design:25.3.1'
     compile 'com.android.support:recyclerview-v7:25.3.1'

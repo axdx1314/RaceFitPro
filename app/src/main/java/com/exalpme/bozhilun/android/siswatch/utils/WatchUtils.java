@@ -74,6 +74,18 @@ public class WatchUtils {
     }
 
     /**
+     * 获取当前时间，格式为 :yyyy-MM-dd
+     *
+     * @return
+     */
+    public static String getCurrentDate3() {
+        Date now = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+        String date = dateFormat.format(now);
+        return date;
+    }
+
+    /**
      * 获取yyyy-MM-dd HH:mm:ss格式时间
      * @return
      */

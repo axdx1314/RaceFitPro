@@ -9,6 +9,7 @@ import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -171,8 +172,14 @@ public class GuideActivity extends BaseActivity {
     private List<View> createPageList() {
         List<View> pageList = new ArrayList<>();
         //去掉直接用mipmap.image,用添加ImageView方法，防止图片太大要求的内存太多，超出限制出现OOM
+        //获取屏幕的默认分辨率
+        Display display = getWindowManager().getDefaultDisplay();
         for (int i = 0; i < imageIds.length; i++) {
             ImageView image = new ImageView(this);
+            image.setMinimumHeight(display.getHeight());
+            image.setMinimumWidth(display.getWidth());
+            image.setMaxHeight(display.getHeight());
+            image.setMaxHeight(display.getWidth());
             BitmapFactory.Options opt = new BitmapFactory.Options();
             opt.inPreferredConfig = Bitmap.Config.RGB_565;
             opt.inPurgeable = true;

@@ -3,7 +3,6 @@ package com.exalpme.bozhilun.android.w30s;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
-import android.content.Intent;
 import android.content.IntentFilter;
 import android.database.Cursor;
 import android.net.Uri;
@@ -14,19 +13,16 @@ import android.provider.ContactsContract;
 import android.support.annotation.IdRes;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentStatePagerAdapter;
-import android.telephony.TelephonyManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
 
 import com.exalpme.bozhilun.android.MyApp;
 import com.exalpme.bozhilun.android.bleutil.MyCommandManager;
-import com.exalpme.bozhilun.android.siswatch.WatchHomeActivity;
 import com.exalpme.bozhilun.android.siswatch.utils.PhoneStateListenerInterface;
-import com.exalpme.bozhilun.android.siswatch.utils.WatchConstants;
 import com.exalpme.bozhilun.android.siswatch.utils.WatchUtils;
+import com.exalpme.bozhilun.android.w30s.utils.NationalistinctionDUtils;
 import com.example.bozhilun.android.R;
 import com.exalpme.bozhilun.android.adpter.FragmentAdapter;
 import com.exalpme.bozhilun.android.siswatch.WatchBaseActivity;
@@ -179,18 +175,20 @@ public class W30SHomeActivity extends WatchBaseActivity implements PhoneStateLis
         super.onResume();
         try {
             if (MyApp.AppisOne) {
-                //检查更新
-                UpdateManager updateManager =
-                        new UpdateManager(W30SHomeActivity.this, URLs.HTTPs + URLs.getvision);
-                updateManager.checkForUpdate(false);
-                MyApp.AppisOne = false;
+                String appInfo = NationalistinctionDUtils.getAppInfo(W30SHomeActivity.this);
+                if (!WatchUtils.isEmpty(appInfo)&&!appInfo.equals("com.bozlun.bozhilun.android")) {
+                    //检查更新
+                    UpdateManager updateManager =
+                            new UpdateManager(W30SHomeActivity.this, URLs.HTTPs + URLs.getvision);
+                    updateManager.checkForUpdate(false);
+                    MyApp.AppisOne = false;
+                }
             }
         } catch (Exception e) {
             e.getMessage();
         }
 
     }
-
     /**
      * 初始化，添加Fragment界面
      */
@@ -248,7 +246,6 @@ public class W30SHomeActivity extends WatchBaseActivity implements PhoneStateLis
     }
 
 
-
     @Override
     public void callPhoneData(int flag, String phoneNumber) {
         try {
@@ -283,7 +280,7 @@ public class W30SHomeActivity extends WatchBaseActivity implements PhoneStateLis
                         break;
                 }
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.getMessage();
         }
 
@@ -297,7 +294,7 @@ public class W30SHomeActivity extends WatchBaseActivity implements PhoneStateLis
             switch (msg.what) {
                 case 555:
                     if (w30SBleName != null && w30SBleName.equals("W30")) {
-                        if (isNo){
+                        if (isNo) {
                             isNo = false;
                             getPeople(phoneNumber, MyApp.getContext());
                         }

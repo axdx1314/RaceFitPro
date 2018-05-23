@@ -1,4 +1,7 @@
 <resources>
+    <string name="string_updata">1. 잠은 최적화를 나타낸다.\n2. 전기와 문자 알람 우화.\n3. 사진을 흔들고, Bug 로 복구해야 한다...\n더 많은 기능 기대 마음껏 체험!</string>
+
+
     //韩国小biaozi
     <string name="string_data_tell">아이콘 두개 영역 더 보기</string>
     <string name="string_net_work">네트워크 설정 도움말</string>

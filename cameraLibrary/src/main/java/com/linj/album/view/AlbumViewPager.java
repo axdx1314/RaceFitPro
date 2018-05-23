@@ -1,8 +1,6 @@
 package com.linj.album.view;
 
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -71,7 +69,6 @@ public class AlbumViewPager extends ViewPager implements OnMovingListener {
 	 */
 	public String deleteCurrentPath(){
 		return ((ViewPagerAdapter)getAdapter()).deleteCurrentItem(getCurrentItem());
-
 	}
 
 
@@ -131,14 +128,14 @@ public class AlbumViewPager extends ViewPager implements OnMovingListener {
 			String path=paths.get(position);
 			//final ProgressBar spinner = (ProgressBar) imageLayout.findViewById(R.id.loading);
 
-			ImageButton videoIcon=(ImageButton)imageLayout.findViewById(R.id.videoicon);
-			if(path.contains("video")){
-				videoIcon.setVisibility(View.VISIBLE);
-			}else {
-				videoIcon.setVisibility(View.GONE);
-			}
-			videoIcon.setOnClickListener(playVideoListener);
-			videoIcon.setTag(path);
+			//ImageButton videoIcon=(ImageButton)imageLayout.findViewById(R.id.videoicon);
+			//if(path.contains("video")){
+			//	videoIcon.setVisibility(View.VISIBLE);
+			//}else {
+			//	videoIcon.setVisibility(View.GONE);
+			//}
+			//videoIcon.setOnClickListener(playVideoListener);
+			//videoIcon.setTag(path);
 			imageLayout.setTag(path);
 			mImageLoader.loadImage(path, imageView, mOptions);
 			return imageLayout;
@@ -187,9 +184,9 @@ public class AlbumViewPager extends ViewPager implements OnMovingListener {
 					FileOperateUtil.deleteSourceFile(path, getContext());
 					paths.remove(path);
 					notifyDataSetChanged();
-					if(paths.size()>0)
+					if(paths.size()>0){
 						return (getCurrentItem()+1)+"/"+paths.size();
-					else {
+					}else {
 						return "0/0";
 					}
 				}

@@ -163,8 +163,22 @@ public class W30sNewRunFragment extends BaseFragment implements RequestView, Swi
     @Override
     public void onResume() {
         super.onResume();
+        try {
+            //总公里数
+            boolean w30sunit = (boolean) SharedPreferenceUtil.get(getContext(), "w30sunit", true);
+            if (w30sunit) {
+                //总运动距离
+                if (w30sTotalKmTv != null) w30sTotalKmTv.setText("" + 0.00);
+                if (textDataUnit != null) textDataUnit.setText(getResources().getString(R.string.km));
+            } else {
+                //总运动距离
+                if (w30sTotalKmTv != null) w30sTotalKmTv.setText("" + (0 * 3.28));
+                if (textDataUnit != null) textDataUnit.setText("ft");
+            }
+        }catch (Exception e){
+            e.getMessage();
+        }
         getRunMapListData(runTags);    //获取地图的历史记录
-
     }
 
     private void getRunMapListData(int runTags) {

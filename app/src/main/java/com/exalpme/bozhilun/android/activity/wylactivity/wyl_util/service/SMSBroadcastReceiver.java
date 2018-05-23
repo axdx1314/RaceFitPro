@@ -86,20 +86,21 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
 //        Log.e(TAG, "-------收到了-短信--内容--" + "------msg---" + msg + "--send-" + sender);
         String bleName = (String) SharedPreferencesUtils.readObject(MyApp.getContext(), "mylanya");
         String w30SBleName = (String) SharedPreferenceUtil.get(MyApp.getApplication(), "mylanya", "");
-        if (!WatchUtils.isEmpty(bleName) || !WatchUtils.isEmpty(w30SBleName)) {
-            people = sender;
-            if (sender.length() == 11) {
-                phoneName = getPeopleNameFromPerson(sender);
-                //getPeople(sender.substring(0, sender.length()));//电话转联系人
-            } else if (sender.length() == 13) {
-                phoneName = getPeopleNameFromPerson(sender.substring(2,sender.length()));
-            } else if (sender.length() == 14) {
-                phoneName = getPeopleNameFromPerson(sender.substring(3,sender.length()));
-            }
-//            String people = getPeople(sender.substring(3, sender.length()));//电话转联系人
-            if (WatchUtils.isEmpty(phoneName)) {
-                phoneName = people;
-            }
+        if (!WatchUtils.isEmpty(bleName)) {
+            String sNumber = callPhoneNumber(sender);
+//            people = sender;
+//            if (sender.length() == 11) {
+//                phoneName = getPeopleNameFromPerson(sender);
+//                //getPeople(sender.substring(0, sender.length()));//电话转联系人
+//            } else if (sender.length() == 13) {
+//                phoneName = getPeopleNameFromPerson(sender.substring(2,sender.length()));
+//            } else if (sender.length() == 14) {
+//                phoneName = getPeopleNameFromPerson(sender.substring(3,sender.length()));
+//            }
+////            String people = getPeople(sender.substring(3, sender.length()));//电话转联系人
+//            if (WatchUtils.isEmpty(phoneName)) {
+//                phoneName = people;
+//            }
             if (bleName.equals(H8_NAME_TAG)) { //H8手表
                 String h8OnorOff = (String) SharedPreferencesUtils.getParam(MyApp.getApplication(), "messagealert", "");
                 if (!WatchUtils.isEmpty(h8OnorOff) && h8OnorOff.equals("on")) {
@@ -120,25 +121,56 @@ public class SMSBroadcastReceiver extends BroadcastReceiver {
                         msg = msg.substring(0, 15) + "...";
                     }
 //                    Log.d(TAG, "============" + people);
-                    sendSmsCommands(phoneName, msg, B18iUtils.H9TimeData(), MsgCountPush.SMS_MSG_TYPE, 1);
+                    sendSmsCommands(sNumber, msg, B18iUtils.H9TimeData(), MsgCountPush.SMS_MSG_TYPE, 1);
                 }
             }
+        }
 
-            if (!WatchUtils.isEmpty(w30SBleName) && w30SBleName.equals("W30")) {
+        if (!WatchUtils.isEmpty(w30SBleName) && w30SBleName.equals("W30")) {
 //                Log.e(TAG, "=====w30SBleName====2===" + w30SBleName);
-                boolean w30sswitch_msg = (boolean) SharedPreferenceUtil.get(MyApp.getApplication(), "w30sswitch_Msg", true);
-                if (w30sswitch_msg) {
+            String sNumber = callPhoneNumber(sender);
+//            people = sender;
+//            if (sender.length() == 11) {
+//                phoneName = getPeopleNameFromPerson(sender);
+//                //getPeople(sender.substring(0, sender.length()));//电话转联系人
+//            } else if (sender.length() == 13) {
+//                phoneName = getPeopleNameFromPerson(sender.substring(2,sender.length()));
+//            } else if (sender.length() == 14) {
+//                phoneName = getPeopleNameFromPerson(sender.substring(3,sender.length()));
+//            }
+////            String people = getPeople(sender.substring(3, sender.length()));//电话转联系人
+//            if (WatchUtils.isEmpty(phoneName)) {
+//                phoneName = people;
+//            }
+            boolean w30sswitch_msg = (boolean) SharedPreferenceUtil.get(MyApp.getApplication(), "w30sswitch_Msg", true);
+            if (w30sswitch_msg) {
 //                    Log.e(TAG, "=====w30SBleName=======" + w30SBleName + "===" + w30sswitch_msg);
-                    if (!WatchUtils.isEmpty(phoneName)) {
-                        MyApp.getmW30SBLEManage().notifacePhone(phoneName + ":" + msg, W30SBLEManage.NotifaceMsgMsg);
-                    } else {
-                        MyApp.getmW30SBLEManage().notifacePhone(msg, W30SBLEManage.NotifaceMsgMsg);
-                    }
+                if (!WatchUtils.isEmpty(sNumber)) {
+                    MyApp.getmW30SBLEManage().notifacePhone(sNumber + ":" + msg, W30SBLEManage.NotifaceMsgMsg);
+                } else {
+                    MyApp.getmW30SBLEManage().notifacePhone(msg, W30SBLEManage.NotifaceMsgMsg);
                 }
             }
         }
 
 
+    }
+
+    public String callPhoneNumber(String sender){
+        people = sender;
+        if (sender.length() == 11) {
+            phoneName = getPeopleNameFromPerson(sender);
+            //getPeople(sender.substring(0, sender.length()));//电话转联系人
+        } else if (sender.length() == 13) {
+            phoneName = getPeopleNameFromPerson(sender.substring(2,sender.length()));
+        } else if (sender.length() == 14) {
+            phoneName = getPeopleNameFromPerson(sender.substring(3,sender.length()));
+        }
+//            String people = getPeople(sender.substring(3, sender.length()));//电话转联系人
+        if (WatchUtils.isEmpty(phoneName)) {
+            phoneName = people;
+        }
+        return phoneName;
     }
 
     /**

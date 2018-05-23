@@ -28,8 +28,8 @@ public class MatrixImageView extends ImageView{
 	/**  图片高度 */
 	private float mImageHeight;
 	/**  原始缩放级别 */
-	private float mScale
-			;
+	private float mScale;
+
 	private OnMovingListener moveListener;
 	private OnSingleTapListener singleTapListener;
 

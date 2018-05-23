@@ -7,27 +7,20 @@ import java.util.List;
 import com.example.bozhilun.android.R;
 import com.linj.FileOperateUtil;
 import com.linj.album.view.AlbumViewPager;
-import com.linj.album.view.AlbumViewPager.OnPlayVideoListener;
-import com.linj.album.view.AlbumViewPager.ViewPagerAdapter;
 import com.linj.album.view.MatrixImageView.OnSingleTapListener;
-import com.linj.video.view.VideoPlayerContainer;
-import com.linj.video.view.VideoPlayerView;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.view.Window;
 import android.view.animation.AlphaAnimation;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 /**
  * @author LinJ
@@ -35,12 +28,11 @@ import android.widget.Toast;
  * @Description:相册图片大图Activity 包含图片编辑功能
  * @date 2015-1-12 下午5:18:25
  */
-public class AlbumItemAty extends Activity implements OnClickListener, OnSingleTapListener
-        , OnPlayVideoListener {
+public class AlbumItemAty extends Activity implements OnClickListener, OnSingleTapListener {//}, OnPlayVideoListener {
     public final static String TAG = "AlbumDetailAty";
     private String mSaveRoot = "W30sPic";
     private AlbumViewPager mViewPager;//显示大图
-    private VideoPlayerContainer mContainer;
+    //private VideoPlayerContainer mContainer;
     private ImageView mBackView;
     private ImageView mCameraView;
     private TextView mCountView;
@@ -57,7 +49,7 @@ public class AlbumItemAty extends Activity implements OnClickListener, OnSingleT
         setContentView(R.layout.w30s_albumitem);
 
         mViewPager = (AlbumViewPager) findViewById(R.id.albumviewpager);
-        mContainer = (VideoPlayerContainer) findViewById(R.id.videoview);
+//        mContainer = (VideoPlayerContainer) findViewById(R.id.videoview);
         mBackView = (ImageView) findViewById(R.id.header_bar_photo_back);
         mCameraView = (ImageView) findViewById(R.id.header_bar_photo_to_camera);
         mCountView = (TextView) findViewById(R.id.header_bar_photo_count);
@@ -74,7 +66,7 @@ public class AlbumItemAty extends Activity implements OnClickListener, OnSingleT
 
         mViewPager.setOnPageChangeListener(pageChangeListener);
         mViewPager.setOnSingleTapListener(this);
-        mViewPager.setOnPlayVideoListener(this);
+        //mViewPager.setOnPlayVideoListener(this);
 
         String currentFileName = null;
         if (getIntent().getExtras() != null)
@@ -119,7 +111,7 @@ public class AlbumItemAty extends Activity implements OnClickListener, OnSingleT
                     currentItem = files.indexOf(file);
                 paths.add(file.getAbsolutePath());
             }
-            mViewPager.setAdapter(mViewPager.new ViewPagerAdapter(paths,AlbumItemAty.this));
+            mViewPager.setAdapter(mViewPager.new ViewPagerAdapter(paths, AlbumItemAty.this));
             mViewPager.setCurrentItem(currentItem);
             mCountView.setText((currentItem + 1) + "/" + paths.size());
         } else {
@@ -190,7 +182,7 @@ public class AlbumItemAty extends Activity implements OnClickListener, OnSingleT
                     mCountView.setText(result);
                 break;
             case R.id.edit:
-                mContainer.setVisibility(View.VISIBLE);
+//                mContainer.setVisibility(View.VISIBLE);
 
                 break;
             default:
@@ -198,30 +190,30 @@ public class AlbumItemAty extends Activity implements OnClickListener, OnSingleT
         }
     }
 
-    @Override
-    public void onBackPressed() {
-        if (mContainer.getVisibility() == View.VISIBLE)
-            mContainer.stopPlay();
-        else {
-            super.onBackPressed();
-        }
-    }
+//    @Override
+//    public void onBackPressed() {
+//        if (mContainer.getVisibility() == View.VISIBLE)
+//            mContainer.stopPlay();
+//        else {
+//            super.onBackPressed();
+//        }
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        if (mContainer.getVisibility() == View.VISIBLE)
+//            mContainer.stopPlay();
+//        super.onStop();
+//    }
 
-    @Override
-    protected void onStop() {
-        if (mContainer.getVisibility() == View.VISIBLE)
-            mContainer.stopPlay();
-        super.onStop();
-    }
-
-    @Override
-    public void onPlay(String path) {
-        // TODO Auto-generated method stub
-        try {
-            mContainer.playVideo(path);
-        } catch (Exception e) {
-            e.printStackTrace();
-            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
-        }
-    }
+//    @Override
+//    public void onPlay(String path) {
+//        // TODO Auto-generated method stub
+//        try {
+//            mContainer.playVideo(path);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+//        }
+//    }
 }

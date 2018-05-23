@@ -37,7 +37,7 @@ import java.util.Map;
 
 public class HomePresenter {
     private static final String TAG = "HomePresenter";
-    W30SRecordFragment w30SRecordFragment;
+    private W30SRecordFragment w30SRecordFragment;
 
     public HomePresenter(W30SRecordFragment w30SRecordFragment) {
         this.w30SRecordFragment = w30SRecordFragment;

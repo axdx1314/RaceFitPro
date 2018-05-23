@@ -1,4 +1,9 @@
 <resources>
+    <string name="string_updata">1.睡眠顯示優化。\n2.來電以及簡訊提醒優化。\n3.搖一搖拍照，連需搖Bug修復…\n更多功能期待您盡情體驗!</string>
+
+
+
+
     <string name="string_data_tell">按兩下圖標區域查看更多</string>
     <string name="string_net_work">網絡設置提示</string>
     <string name="string_no_net_work">網絡連接不可用,是否進行設置?</string>

@@ -1,5 +1,10 @@
 <resources>
     //意大利（意大利）
+    <string name="string_updata">1. sleep display optimization. \n2. calls and SMS alerts optimization. \n3. shake to take photos, even shake Bug repair... \n more functions expect you to enjoy the experience!</string>
+
+
+
+
     <string name="string_data_tell">Double click chart for detail</string>
     <string name="string_net_work">Suggerimenti per le impostazioni di rete</string>
     <string name="string_no_net_work">La connessione di rete non è disponibile. È impostata?</string>

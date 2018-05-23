@@ -145,12 +145,14 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
     @BindView(R.id.batteryPowerTv)
     TextView batteryPowerTv;
     int kmormi; //距离显示是公制还是英制
-    CallDataBackListe callDataBackListe;
-    private Handler mHandler = new Handler(new mHandlerCallBackLister());
+    private static CallDataBackListe callDataBackListe;
+    private static Handler mHandler = null;
+    private static mHandlerCallBackLister mHandlerCallBackLister = null;
     private boolean isOneCreate = false;
     private boolean isOneonResume = false;
     private boolean isHaertNull = true;
-
+    private List<W30S_SleepDataItem> sleepDataList;
+    private static HomePresenter homePresenter;
     //private GetMaxStepServer getMaxStepServer;
 
     @Override
@@ -162,7 +164,7 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
         if (mHandler != null) mHandler.sendEmptyMessageDelayed(0x03, 1000);
     }
 
-    HomePresenter homePresenter;
+
 
     @Nullable
     @Override
@@ -170,11 +172,13 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
         b18iRecordView = inflater.inflate(R.layout.fragment_b18i_record, container, false);
         unbinder = ButterKnife.bind(this, b18iRecordView);
         isOneCreate = true;
+        mHandlerCallBackLister = new mHandlerCallBackLister();
+        mHandler = new Handler(mHandlerCallBackLister);
         try {
             //stuteLister();
             homePresenter = new HomePresenter(this);
             homePresenter.changeUI();
-            homePresenter.changeHttpsDataUI();
+            //homePresenter.changeHttpsDataUI();
 
             saveStateToArguments();
             initStepList();
@@ -214,9 +218,9 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
         onesApp = true;
         if (MyCommandManager.DEVICENAME == null) {
             //Log.d(TAG, "001-----回掉过来的链接状态");
-            if (callDataBackListe != null) {
-                callDataBackListe = null;
-            }
+//            if (callDataBackListe != null) {
+//                callDataBackListe = null;
+//            }
         } else {
             //Log.d(TAG, "002-----回掉过来的链接状态");
             isStuta();
@@ -228,19 +232,19 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
     //本月中的最大步数和距离卡路里
     public void changeHttpsDataUI(int maxStep, String kacl, String disc, String dateStr) {
         //Log.d("---------------changeHttpsDataUI--", maxStep + "===" + kacl + "===" + disc + "===" + dateStr);
-        boolean w30sunit = (boolean) SharedPreferenceUtil.get(getContext(), "w30sunit", true);
-        if (watchRecordTagstepTv != null) {
-            if (w30sunit) {
-                watchRecordTagstepTv.setText(getResources().getString(R.string.string_one_day_record) + ":" + dateStr + "  " +
-                        maxStep + getResources().getString(R.string.steps)
-                        + "  " + disc + "m");
-            } else {
-                int round = (int) Math.floor(Integer.valueOf(disc) * 3.28);
-                watchRecordTagstepTv.setText(getResources().getString(R.string.string_one_day_record) + ":" + dateStr + "  " +
-                        maxStep + getResources().getString(R.string.steps) + "  "
-                        + round + "FT");
-            }
-        }
+//        boolean w30sunit = (boolean) SharedPreferenceUtil.get(getContext(), "w30sunit", true);
+//        if (watchRecordTagstepTv != null) {
+//            if (w30sunit) {
+//                watchRecordTagstepTv.setText(getResources().getString(R.string.string_one_day_record) + ":" + dateStr + "  " +
+//                        maxStep + getResources().getString(R.string.steps)
+//                        + "  " + disc + "m");
+//            } else {
+//                int round = (int) Math.floor(Integer.valueOf(disc) * 3.28);
+//                watchRecordTagstepTv.setText(getResources().getString(R.string.string_one_day_record) + ":" + dateStr + "  " +
+//                        maxStep + getResources().getString(R.string.steps) + "  "
+//                        + round + "FT");
+//            }
+//        }
     }
 
     @Override
@@ -359,6 +363,9 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
     public void onDestroyView() {
         super.onDestroyView();
         try {
+            if (mHandler!=null){
+                mHandler.removeCallbacksAndMessages(null);
+            }
             pageIsOne = 0;
             isHaertNull = true;
             getContext().unregisterReceiver(mBroadcastReceiver);
@@ -685,7 +692,16 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
     public void getDatas() {
         synchronized (this) {
             try {
-                if (textAllSleepData != null) textAllSleepData.setVisibility(View.GONE);
+                if (textStute != null) {
+                    int visibility = textStute.getVisibility();
+                    if (visibility == 0x00000008) {
+                        if (textAllSleepData != null) {
+                            textAllSleepData.setVisibility(View.VISIBLE);
+                        }
+                    } else {
+                        textAllSleepData.setVisibility(View.GONE);
+                    }
+                }
                 DataAcy();
                 if (isOneCreate) {
                     isOneCreate = false;
@@ -735,12 +751,9 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
             try {
                 if (MyCommandManager.DEVICENAME != null) {
 //                Log.d("======c========", "获取数据开始啦");
-                    if (callDataBackListe != null) {
-                        callDataBackListe = null;
-                    } else {
+                    if (callDataBackListe == null) {
                         callDataBackListe = new CallDataBackListe();
                     }
-                    if (callDataBackListe == null) return;
                     MyApp.getmW30SBLEManage().syncTime(callDataBackListe);
                 }
 
@@ -788,6 +801,7 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
 //    });
 
     private class mHandlerCallBackLister implements Handler.Callback {
+
         @Override
         public boolean handleMessage(Message msg) {
             switch (msg.what) {
@@ -1399,9 +1413,11 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
                 if (textStute != null) {
                     int visibility = textStute.getVisibility();
                     if (visibility == 0x00000008) {
-                        if (textAllSleepData!=null){
-                            textAllSleepData.setVisibility(View.GONE);
+                        if (textAllSleepData != null) {
+                            textAllSleepData.setVisibility(View.VISIBLE);
                         }
+                    } else {
+                        textAllSleepData.setVisibility(View.GONE);
                     }
                 }
             }
@@ -1699,11 +1715,12 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
 
         }
 
+
         @Override
         public void CallDatasBackListenter(W30SSleepData sleepDatas) {
 //            Log.d(TAG, "解析睡眠数据 = 日期 = " + sleepDatas.getSleepData());
-//            Log.d(TAG, "解析睡眠数据 = 数据 = " + sleepDatas.getSleepDataList().toString());
             try {
+                Log.d(TAG, "解析睡眠数据 = 数据 = " + sleepDatas.getSleepDataList().toString());
                 Date dateBeforess = H9TimeUtil.getDateBefore(new Date(), 1);
                 String nextDay = H9TimeUtil.getValidDateStr2(dateBeforess);
                 String sleepData = sleepDatas.getSleepData();
@@ -1713,66 +1730,72 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
                 AOYE = 0;
                 ALLTIME = 0;
                 AWAKE2 = 0;
+                if (sleepDataList != null) {
+                    sleepDataList.clear();
+                    sleepDataList = null;
+                }
+                sleepDataList = sleepDatas.getSleepDataList();
                 boolean isSharpe = true;
                 if (sleepData.equals(nextDay)) {
-                    //Log.d("====解析睡眠数据====", sleepDatas.getSleepDataList().toString());
+                    Log.d("====解析睡眠数据====", sleepDatas.getSleepDataList().toString());
                     isSharpe = true;
                 } else {
                     isSharpe = false;
                 }
-                final List<W30S_SleepDataItem> sleepDataList = sleepDatas.getSleepDataList();
 
-                for (int i = 0; i < sleepDataList.size(); i++) {
-                    String startTime = null;
-                    String startTimeLater = null;
-                    String sleep_type = null;
-                    if (i >= (sleepDataList.size() - 1)) {
-                        startTime = sleepDataList.get(i).getStartTime();
-                        startTimeLater = sleepDataList.get(i).getStartTime();
-                        sleep_type = sleepDataList.get(i).getSleep_type();
-                    } else {
-                        startTime = sleepDataList.get(i).getStartTime();
-                        startTimeLater = sleepDataList.get(i + 1).getStartTime();
-                        sleep_type = sleepDataList.get(i).getSleep_type();
-                    }
+                if (sleepDataList != null || sleepDataList.size() > 0) {
+                    for (int i = 0; i < sleepDataList.size(); i++) {
+                        String startTime = null;
+                        String startTimeLater = null;
+                        String sleep_type = null;
+                        if (i >= (sleepDataList.size() - 1)) {
+                            startTime = sleepDataList.get(i).getStartTime();
+                            startTimeLater = sleepDataList.get(i).getStartTime();
+                            sleep_type = sleepDataList.get(i).getSleep_type();
+                        } else {
+                            startTime = sleepDataList.get(i).getStartTime();
+                            startTimeLater = sleepDataList.get(i + 1).getStartTime();
+                            sleep_type = sleepDataList.get(i).getSleep_type();
+                        }
 //                String timeExpend = W30BasicUtils.getTimeExpend(yearTime + " " + startTime, yearTime + " " + startTimeLater);
-                    String[] starSplit = startTime.split("[:]");
-                    String[] endSplit = startTimeLater.split("[:]");
+                        String[] starSplit = startTime.split("[:]");
+                        String[] endSplit = startTimeLater.split("[:]");
 
-                    int startHour = Integer.valueOf(starSplit[0]);
-                    int endHour = Integer.valueOf(endSplit[0]);
+                        int startHour = Integer.valueOf(starSplit[0]);
+                        int endHour = Integer.valueOf(endSplit[0]);
 
-                    int startMin = Integer.valueOf(starSplit[1]);
-                    int endMin = (Integer.valueOf(endSplit[1]));
-                    //Log.d("----------------", "开始时：" + startHour + "结束时：" + endHour + "开始分：" + startMin + "结束分：" + endMin);
-                    //String timeExpend = "";
-                    //Date dateBefore = H9TimeUtil.getDateBefore(new Date(), 1);
-                    //String yearTime = W30BasicUtils.dateToString(dateBefore, "yyyy-MM-dd");
-                    //Date dateBeforeNew = H9TimeUtil.getDateBefore(new Date(), 0);
-                    //String yearTimeNew = W30BasicUtils.dateToString(dateBeforeNew, "yyyy-MM-dd");
-                    if (startHour > endHour) {
-                        endHour = endHour + 24;
-                    }
-                    //timeExpend = W30BasicUtils.getTimeExpend(yearTimeNew + " " + startTime, yearTimeNew + " " + startTimeLater);
-                    //String[] split = timeExpend.split("[:]");
-                    //double all_m = Math.abs(Integer.valueOf(split[0])) * 60 + Math.abs(Integer.valueOf(split[1]));
-                    int all_m = (endHour - startHour) * 60 + (endMin - startMin);
-                    //Log.e("----------timeExpend--------", all_m + "-----type---" + sleep_type);
-                    if (sleep_type.equals("0") || sleep_type.equals("1") || sleep_type.equals("5")) {
-                        AWAKE2 += all_m;
-                        ALLTIME += all_m;
-                    } else if (sleep_type.equals("4")) {
-                        AWAKE2 += all_m;
-                        ALLTIME += all_m;
-                        AWAKE++;
-                    } else if (sleep_type.equals("2")) {
-                        //潜水
-                        SHALLOW += all_m;
-                        ALLTIME += all_m;
-                    } else if (sleep_type.equals("3")) {
-                        //深水
-                        DEEP += all_m;
-                        ALLTIME += all_m;
+                        int startMin = Integer.valueOf(starSplit[1]);
+                        int endMin = (Integer.valueOf(endSplit[1]));
+                        //Log.d("----------------", "开始时：" + startHour + "结束时：" + endHour + "开始分：" + startMin + "结束分：" + endMin);
+                        //String timeExpend = "";
+                        //Date dateBefore = H9TimeUtil.getDateBefore(new Date(), 1);
+                        //String yearTime = W30BasicUtils.dateToString(dateBefore, "yyyy-MM-dd");
+                        //Date dateBeforeNew = H9TimeUtil.getDateBefore(new Date(), 0);
+                        //String yearTimeNew = W30BasicUtils.dateToString(dateBeforeNew, "yyyy-MM-dd");
+                        if (startHour > endHour) {
+                            endHour = endHour + 24;
+                        }
+                        //timeExpend = W30BasicUtils.getTimeExpend(yearTimeNew + " " + startTime, yearTimeNew + " " + startTimeLater);
+                        //String[] split = timeExpend.split("[:]");
+                        //double all_m = Math.abs(Integer.valueOf(split[0])) * 60 + Math.abs(Integer.valueOf(split[1]));
+                        int all_m = (endHour - startHour) * 60 + (endMin - startMin);
+                        //Log.e("----------timeExpend--------", all_m + "-----type---" + sleep_type);
+                        if (sleep_type.equals("0") || sleep_type.equals("1") || sleep_type.equals("5")) {
+                            AWAKE2 += all_m;
+                            ALLTIME += all_m;
+                        } else if (sleep_type.equals("4")) {
+                            AWAKE2 += all_m;
+                            ALLTIME += all_m;
+                            AWAKE++;
+                        } else if (sleep_type.equals("2")) {
+                            //潜水
+                            SHALLOW += all_m;
+                            ALLTIME += all_m;
+                        } else if (sleep_type.equals("3")) {
+                            //深水
+                            DEEP += all_m;
+                            ALLTIME += all_m;
+                        }
                     }
                 }
                 //Log.e("==========睡眠=", DEEP + "===" + SHALLOW);
@@ -1956,10 +1979,16 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
                     int number = Integer.valueOf(timeDifference.trim());
                     int number2 = Integer.parseInt(timeDifference.trim());
                     if (Math.abs(number) >= 7200 || Math.abs(number2) >= 7200) {
-                        UpDatasBase.upDataSleep(DEEP + "", SHALLOW + "", sleepData);//上传睡眠数据
+                        if (DEEP > 0 || SHALLOW > 0) {
+                            UpDatasBase.upDataSleep(DEEP + "", SHALLOW + "", sleepData);//上传睡眠数据
+                        }
+
                     }
                 } else {
-                    UpDatasBase.upDataSleep(DEEP + "", SHALLOW + "", sleepData);//上传睡眠数据
+                    if (DEEP > 0 || SHALLOW > 0) {
+                        UpDatasBase.upDataSleep(DEEP + "", SHALLOW + "", sleepData);//上传睡眠数据
+                    }
+
                 }
                 if (isSharpe) {
                     SharedPreferenceUtil.put(getActivity(), "upSleepTime", B18iUtils.getSystemDataStart());
@@ -1973,23 +2002,32 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
                         //                    "入睡时间：" + finalSleepInto + "苏醒次数：" + finalSleepWakeCount + "苏醒时间：" + finalSleepWakeTime + "===所有时间：" + ALLTIME);
                         if (isHidden) {
                             if (sleepDataList == null && sleepDataList.size() <= 0) {
-                                w30S_sleepChart.setVisibility(View.GONE);
-                                text_sleep_nodata.setVisibility(View.VISIBLE);
+                                if (w30S_sleepChart != null)
+                                    w30S_sleepChart.setVisibility(View.GONE);
+                                if (text_sleep_nodata != null)
+                                    text_sleep_nodata.setVisibility(View.VISIBLE);
                             } else {
-                                w30S_sleepChart.setVisibility(View.VISIBLE);
-                                text_sleep_nodata.setVisibility(View.GONE);
-                                w30S_sleepChart.setBeanList(sleepDataList);
+                                if (w30S_sleepChart != null)
+                                    w30S_sleepChart.setVisibility(View.VISIBLE);
+                                if (text_sleep_nodata != null)
+                                    text_sleep_nodata.setVisibility(View.GONE);
+                                if (w30S_sleepChart != null)
+                                    w30S_sleepChart.setBeanList(sleepDataList);
 
 
                                 //入睡时间
                                 if (sleep_into_time != null) {
                                     sleep_into_time.setVisibility(View.VISIBLE);
-                                    sleep_into_time.setText(sleepDataList.get(0).getStartTime());
+                                    if (sleepDataList.size() > 0) {
+                                        Log.d("=========aaa==", sleepDataList.get(0).getStartTime());
+                                        sleep_into_time.setText(sleepDataList.get(0).getStartTime());
+                                    }
                                 }
                                 //醒来时间
                                 if (sleep_out_time != null) {
                                     sleep_out_time.setVisibility(View.VISIBLE);
-                                    sleep_out_time.setText(sleepDataList.get(sleepDataList.size() - 1).getStartTime());
+                                    if (sleepDataList.size() > 0)
+                                        sleep_out_time.setText(sleepDataList.get(sleepDataList.size() - 1).getStartTime());
                                 }
 
                                 //总睡眠设置为可拖动最大进度
@@ -2010,10 +2048,14 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
                                 }
                                 if (shallowSleep != null) {
                                     double setScale = (double) WatchUtils.div((double) DEEP, 60, 1);
-                                    double v = Double.valueOf(div3) - setScale;
-                                    double setScale1 = (double) WatchUtils.div((double) v, 1, 1);
-                                    //double setScale = (double) WatchUtils.div((double) SHALLOW, 60, 1);
-                                    shallowSleep.setText(setScale1 + getResources().getString(R.string.hour));
+                                    if (!WatchUtils.isEmpty(div3)) {
+                                        double v = Double.valueOf(div3) - setScale;
+                                        if (v > 0) {
+                                            double setScale1 = (double) WatchUtils.div((double) v, 1, 1);
+                                            //double setScale = (double) WatchUtils.div((double) SHALLOW, 60, 1);
+                                            shallowSleep.setText(setScale1 + getResources().getString(R.string.hour));
+                                        }
+                                    }
                                 }
 
                                 if (awakeSleep != null) {
@@ -2022,6 +2064,7 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
                                 }
 
                                 double hour = (double) (DEEP + SHALLOW) / (double) 60;
+                                if (hour <= 0) return;
                                 String format = new DecimalFormat("0.00").format(hour);
                                 String[] split = format.split("[.]");
                                 int integer = Integer.valueOf(split[0]);
@@ -2040,6 +2083,7 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
                                     //int standar = (allSleep / standardSleepAll) * 100;
                                     String strings = String.valueOf((standardSleep * 100));
                                     if (textAllSleepData != null) {
+                                        textAllSleepData.setVisibility(View.VISIBLE);
                                         if (strings.contains(".")) {
                                             textAllSleepData.setText(getResources().getString(R.string.string_today_sleep_all_time) + div3 +
                                                     getResources().getString(R.string.hour)
@@ -2053,9 +2097,11 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
                                         }
                                     }
                                 } else {
-                                    if (textAllSleepData != null)
+                                    if (textAllSleepData != null) {
+                                        textAllSleepData.setVisibility(View.VISIBLE);
                                         textAllSleepData.setText(getResources().getString(R.string.string_today_sleep_all_time) + div3 +
                                                 getResources().getString(R.string.hour) + "  " + getResources().getString(R.string.recovery_count) + ":" + AWAKE);
+                                    }
                                 }
 
 
@@ -2238,11 +2284,13 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
 
                     if (!TextUtils.isEmpty(homeTime)) {
                         String timeDifference = H9TimeUtil.getTimeDifferencesec(homeTime, B18iUtils.getSystemDataStart());
-                        int number = Integer.valueOf(timeDifference.trim());
-                        int number2 = Integer.parseInt(timeDifference.trim());
-                        if (number >= 54000 || number2 >= 54000) {
-                            //Log.d("====解析睡眠数据=isSharpe=1==", isSharpe + "====" + number);
-                            UpDatasBase.upDataHearte(String.valueOf(datas), tim);//上传心率
+                        if (!WatchUtils.isEmpty(timeDifference)) {
+                            int number = Integer.valueOf(timeDifference.trim());
+                            int number2 = Integer.parseInt(timeDifference.trim());
+                            if (number >= 54000 || number2 >= 54000) {
+                                //Log.d("====解析睡眠数据=isSharpe=1==", isSharpe + "====" + number);
+                                UpDatasBase.upDataHearte(String.valueOf(datas), tim);//上传心率
+                            }
                         }
                     } else {
                         UpDatasBase.upDataHearte(String.valueOf(datas), tim);//上传心率
@@ -2282,15 +2330,22 @@ public class W30SRecordFragment extends BaseFragment {//implements GetMaxStepSer
                             for (int i = 0; i < heartDatasMaxOrLad.size(); i++) {
                                 NowVale += heartDatasMaxOrLad.get(i);
                             }
-                            double div3 = (double) WatchUtils.div((double) NowVale, heartDatasMaxOrLad.size() - 1, 1);
-                            if (autoHeartTextNumber != null) {
-                                if (String.valueOf(div3).contains(".")) {
-                                    String s = String.valueOf(div3).split("[.]")[0];
-                                    autoHeartTextNumber.setText(s + "bpm");
-                                } else {
-                                    autoHeartTextNumber.setText(div3 + "bpm");
+                            //除数不能为0
+                            if (NowVale != 0) {
+                                int i = heartDatasMaxOrLad.size() - 1;
+                                if (i != 0) {
+                                    double div3 = (double) WatchUtils.div((double) NowVale, i, 1);
+                                    if (autoHeartTextNumber != null) {
+                                        if (String.valueOf(div3).contains(".")) {
+                                            String s = String.valueOf(div3).split("[.]")[0];
+                                            autoHeartTextNumber.setText(s + "bpm");
+                                        } else {
+                                            autoHeartTextNumber.setText(div3 + "bpm");
+                                        }
+                                    }
                                 }
                             }
+
                         }
 
 

@@ -16,7 +16,6 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
-
 import com.exalpme.bozhilun.android.h9.utils.H9TimeUtil;
 import com.example.bozhilun.android.R;
 import com.exalpme.bozhilun.android.bean.AvgHeartRate;
@@ -38,6 +37,7 @@ import org.apache.commons.lang.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -52,6 +52,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.Unbinder;
+import hirondelle.date4j.DateTime;
 import lecho.lib.hellocharts.formatter.ColumnChartValueFormatter;
 import lecho.lib.hellocharts.formatter.SimpleColumnChartValueFormatter;
 import lecho.lib.hellocharts.gesture.ContainerScrollType;
@@ -95,7 +96,7 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
     TextView newH9DataSleepShowTv;
 
     Unbinder unbinder;
-    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    SimpleDateFormat sdf = new SimpleDateFormat("yyyy/MM/dd");
     //步数的相关
     List<WatchDataDatyBean> stepList;
     @BindView(R.id.newH9DataWeekTv)
@@ -338,7 +339,7 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
             } else {
                 jsonObect.put("deviceCode", SharedPreferencesUtils.readObject(getActivity(), "mylanmac"));
             }
-            jsonObect.put("startDate", sdf.format(WatchUtils.getDateBefore(sdf.parse(WatchUtils.getCurrentDate()), week)));
+            jsonObect.put("startDate", sdf.format(WatchUtils.getDateBefore(sdf.parse(WatchUtils.getCurrentDate3()), week)));
 //            jsonObect.put("endDate", WatchUtils.getCurrentDate());
             Date dateBeforess = H9TimeUtil.getDateBefore(new Date(), 1);
             String nextDay = H9TimeUtil.getValidDateStr2(dateBeforess);
@@ -422,9 +423,9 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
             ColumnChartValueFormatter chartValueFormatter = new SimpleColumnChartValueFormatter();
             column.setFormatter(chartValueFormatter);
             //是否有数据标注
-            column.setHasLabels(true);
+            column.setHasLabels(false);
             //是否是点击圆柱才显示数据标注
-            column.setHasLabelsOnlyForSelected(true);
+            column.setHasLabelsOnlyForSelected(false);
             columns.add(column);
             //给x轴坐标设置描述
             axisValues.add(new AxisValue(i).setLabel(heartXList.get(i)));
@@ -508,7 +509,11 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
         newH9DataHeartChartView.setOnValueTouchListener(new ColumnChartOnValueSelectListener() {
             @Override
             public void onValueSelected(int i, int i1, SubcolumnValue subcolumnValue) {
-                newH9DataHeartShowTv.setText("" + subcolumnValue.getValue() + " bpm");
+                String tmpHeartV = StringUtils.substringBefore(String.valueOf(subcolumnValue.getValue()),".");
+                if(!WatchUtils.isEmpty(tmpHeartV)){
+                    newH9DataHeartShowTv.setText("" + tmpHeartV + " bpm");
+                }
+
             }
 
             @Override
@@ -596,9 +601,9 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
             ColumnChartValueFormatter chartValueFormatter = new SimpleColumnChartValueFormatter();
             column.setFormatter(chartValueFormatter);
             //是否有数据标注
-            column.setHasLabels(true);
+            column.setHasLabels(false);
             //是否是点击圆柱才显示数据标注
-            column.setHasLabelsOnlyForSelected(true);
+            column.setHasLabelsOnlyForSelected(false);
             columns.add(column);
             //给x轴坐标设置描述
             axisValues.add(new AxisValue(i).setLabel(stepXList.get(i)));
@@ -671,7 +676,11 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
             @Override
             public void onValueSelected(int i, int i1, SubcolumnValue subcolumnValue) {
 //                Log.e(TAG, "----i--" + i + "--i1--" + i1);
-                newH9DataStepShowTv.setText("" + subcolumnValue.getValue() + " step");
+                String tmpStepV = StringUtils.substringBefore(String.valueOf(subcolumnValue.getValue()),".");
+                if(!WatchUtils.isEmpty(tmpStepV)){
+                    newH9DataStepShowTv.setText("" + tmpStepV + " step");
+                }
+
                 if (count == 13) {    //年
                     //newH9DataStepShowTv.setText("" + stepSumMap.get(tempList.get(i)) + "");
 
@@ -745,9 +754,9 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
             column.setFormatter(chartValueFormatter);
 
             //是否有数据标注
-            column.setHasLabels(true);
+            column.setHasLabels(false);
             //是否是点击圆柱才显示数据标注
-            column.setHasLabelsOnlyForSelected(true);
+            column.setHasLabelsOnlyForSelected(false);
             columns.add(column);
             //给x轴坐标设置描述
             axisValues.add(new AxisValue(i).setLabel(sleepXList.get(i)));
@@ -833,7 +842,11 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
                 float value = subcolumnValue.getValue();
                 if (value <= 0) return;
                 double setScale = (double) WatchUtils.div((double) value, (double) 60, 1);
-                newH9DataSleepShowTv.setText("" + setScale + " h");
+                String tmpSetScale = StringUtils.substringBefore(String.valueOf(setScale),".");
+                if(!WatchUtils.isEmpty(tmpSetScale)){
+                    newH9DataSleepShowTv.setText("" + tmpSetScale + " h");
+                }
+
             }
 
             @Override
@@ -932,6 +945,7 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
 
     @Override
     public void successData(int what, Object object, int daystag) {
+        Log.d(TAG,"---------请求返回="+object);
         try {
             if (what == 1) {  //不是
                 analysisStepData(object.toString(), daystag);
@@ -962,6 +976,7 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
 
     //解析步数
     private void analysisStepData(String stepdata, int weekTag) {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         stepXList = new ArrayList<>();
         if (!WatchUtils.isEmpty(stepdata)) {
             try {
@@ -981,8 +996,10 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
                             mValues = new ArrayList<>();
                             stepSumMap = new HashMap<>();
                             int sum = 0;
+
                             for (int i = 0; i < stepList.size(); i++) {
-                                String strDate = stepList.get(i).getRtc().substring(2, 7);
+                                String dateStr = stepList.get(i).getRtc();
+                                String strDate = dateStr.substring(2, 7);
                                 if (stepSumMap.get(strDate) != null) {
                                     sum += stepList.get(i).getStepNumber();
                                 } else {
@@ -1016,7 +1033,8 @@ public class W30sNewsH9DataFragment extends BaseFragment implements SwipeRefresh
                             //获取值
                             for (WatchDataDatyBean stepNumber : stepList) {
                                 mValues.add(stepNumber.getStepNumber());    //步数的数值显示
-                                String rct = stepNumber.getRtc().substring(5, stepNumber.getRtc().length());
+                                String dateStr = stepNumber.getRtc();
+                                String rct = dateStr.substring(5, dateStr.length());
                                 stepXList.add(rct);
                             }
 //                            Log.e(TAG, "----listsize--" + stepList.size());

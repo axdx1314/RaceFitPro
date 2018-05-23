@@ -186,4 +186,24 @@
         <item name="android:textSize">30sp</item>
     </style>
 
+    <style name="CommomDialog" parent="android:style/Theme.Dialog">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
+        <item name="android:windowEnterAnimation">@anim/update_app_window_in</item>
+        <item name="android:windowExitAnimation">@anim/update_app_window_out</item>
+
+        <!--<item name="android:windowFrame">@null</item> &lt;!&ndash;Dialog的windowFrame框为无&ndash;&gt;-->
+        <!--<item name="android:windowIsFloating">true</item> &lt;!&ndash;是否浮现在activity之上&ndash;&gt;-->
+        <!--<item name="android:windowIsTranslucent">false</item> &lt;!&ndash;是否半透明&ndash;&gt;-->
+        <!--<item name="android:windowNoTitle">true</item> &lt;!&ndash;是否有title&ndash;&gt;-->
+        <!--<item name="android:backgroundDimEnabled">false</item> &lt;!&ndash; 背景是否模糊显示&ndash;&gt;-->
+        <!--<item name="android:background">@android:color/transparent</item>-->
+        <!--<item name="android:windowBackground">@android:color/transparent</item>-->
+        <!--<item name="android:windowCloseOnTouchOutside">false</item>-->
+        <!--<item name="android:windowEnterAnimation">@anim/update_app_window_in</item>-->
+        <!--<item name="android:windowExitAnimation">@anim/update_app_window_out</item>-->
+    </style>
+
 </resources>

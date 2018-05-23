@@ -1,4 +1,8 @@
 <resources>
+    <string name="string_updata">1 .睡眠の表示最適化。\ n 2 .電話とメールの注意が最適化された。\ n 3 .カメラを揺らすと、Bugを揺らして修復する...\nもっと多くの機能を楽しみにしています！</string>
+
+
+
 
     <string name="string_data_tell">双击图标区域查看更多</string>
     <string name="string_net_work">网络设置提示</string>

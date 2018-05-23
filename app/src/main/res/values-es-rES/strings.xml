@@ -1,4 +1,9 @@
 <resources>
+    <string name="string_updata">1. sleep display optimization. \n2. calls and SMS alerts optimization. \n3. shake to take photos, even shake Bug repair... \n more functions expect you to enjoy the experience!</string>
+
+
+
+
     //西班牙
     <string name="string_data_tell">Double click chart for detail</string>
     <string name="string_net_work">Consejos de configuración de red</string>
